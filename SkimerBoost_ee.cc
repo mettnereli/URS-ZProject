@@ -91,7 +91,7 @@ void SkimerBoost::Loop(TString OutputFile)
 		if (!(IsoLep1Value && IsoLep2Value && eleMVAId && eleMVAId2)) continue;
 		ZCandidate = SubEle4Momentum + LeadEle4Momentum;
 		bool OS = eleCharge->at(iele) * eleCharge->at(jele) < 0;
-		bool SS = muCharge->at(iele) * muCharge->at(jele) > 0;
+		bool SS = eleCharge->at(iele) * eleCharge->at(jele) > 0;
 		if (OS){
 		  diEle_OS->Fill(ZCandidate.M());
 		  break;
