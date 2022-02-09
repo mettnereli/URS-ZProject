@@ -22,7 +22,7 @@ void SkimerBoost::Loop(TString OutputFile)
     TH1F* diEle_OS = new TH1F("diEle_OS","diEle_OS",30, 0, 160);
     TH1F* diEle_SS = new TH1F("diEle_SS","diEle_SS",30, 0, 160);
     
-    TFile* file = TFile::Open(OutputFile, "etau_tree");
+    TFile* file = TFile::Open(OutputFile, "RECREATE");
     TTree* MyNewTree = fChain->CloneTree(0);
     
     fChain->SetBranchStatus("*",1);
