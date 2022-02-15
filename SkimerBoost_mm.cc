@@ -35,6 +35,10 @@ void SkimerBoost::Loop(TString OutputFile)
     Long64_t nbytes = 0, nb = 0;
     float MuMass= 0.10565837;
     float eleMass= 0.000511;
+    int ssRun [1000] = {};
+    int ssRunSize = 0;
+    int osRun [5000] = {};
+    int osRunSize = 0;
     
     
     
@@ -81,6 +85,16 @@ void SkimerBoost::Loop(TString OutputFile)
 		ZCandidate = SubMu4Momentum + LeadMu4Momentum;
 		bool OS = muCharge->at(imu) * muCharge->at(jmu) < 0;
 		bool SS = muCharge->at(imu) * muCharge->at(jmu) > 0;
+		if (ZCandidate.M() >= 86 && ZCandidate.M() <= 96) {
+		  if (OS) {
+		    osRun[osRunSize] = run;
+		    osRunSize++;
+		  }
+		  if (SS) {
+		    ssRun[ssRunSize] = run;
+		    ssRunSize++;
+		  }
+		}
 		if (OS){
 		  diMu_OS->Fill(ZCandidate.M());
 		  break;
@@ -100,6 +114,15 @@ void SkimerBoost::Loop(TString OutputFile)
         
         MyNewTree->Fill();
     }
+    int i;
+    TH1F* osEventsVsRun = new TH1F("OSrunMu", "OSrunMu", 50, 315200, 325200);
+    TH1F* ssEventsVsRun = new TH1F("SSrunMu", "SSrunMu", 50, 315200, 325200);
+    for (i = 0; i < osRunSize; i++) {
+      osEventsVsRun->Fill(osRun[i]);
+    }
+    for (i = 0; i < ssRunSize; i++) {
+      ssEventsVsRun->Fill(ssRun[i]);
+    }
     
     
     MyNewTree->AutoSave();
@@ -107,6 +130,8 @@ void SkimerBoost::Loop(TString OutputFile)
     hcount->Write();
     diMu_OS->Write();
     diMu_SS->Write();
+    osEventsVsRun->Write();
+    ssEventsVsRun->Write();
     if (hPU) hPU->Write();
     if (hPUTrue) hPUTrue->Write();
     file->Close();

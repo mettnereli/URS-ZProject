@@ -22,6 +22,7 @@ void SkimerBoost::Loop(TString OutputFile)
     TH1F* diEle_OS = new TH1F("diEle_OS","diEle_OS",30, 0, 160);
     TH1F* diEle_SS = new TH1F("diEle_SS","diEle_SS",30, 0, 160);
     
+    
     TFile* file = TFile::Open(OutputFile, "RECREATE");
     TTree* MyNewTree = fChain->CloneTree(0);
     
@@ -35,7 +36,10 @@ void SkimerBoost::Loop(TString OutputFile)
     Long64_t nbytes = 0, nb = 0;
     float MuMass= 0.10565837;
     float eleMass= 0.000511;
-    
+    int ssRun [300] = {};
+    int ssRunSize = 0;
+    int osRun [5000] = {};
+    int osRunSize = 0;
     
     
     for (int jentry=0; jentry<nentries;jentry++) {
@@ -92,6 +96,16 @@ void SkimerBoost::Loop(TString OutputFile)
 		ZCandidate = SubEle4Momentum + LeadEle4Momentum;
 		bool OS = eleCharge->at(iele) * eleCharge->at(jele) < 0;
 		bool SS = eleCharge->at(iele) * eleCharge->at(jele) > 0;
+		if (ZCandidate.M() >= 86 && ZCandidate.M() <= 96) {
+		  if (OS) {
+		    osRun[osRunSize] = run;
+		    osRunSize++;
+		  }
+		  if (SS) {
+		    ssRun[ssRunSize] = run;
+		    ssRunSize++;
+		  }
+		}
 		if (OS){
 		  diEle_OS->Fill(ZCandidate.M());
 		  break;
@@ -111,13 +125,23 @@ void SkimerBoost::Loop(TString OutputFile)
         
         MyNewTree->Fill();
     }
-    
+    int i;
+    TH1F* osEventsVsRun = new TH1F("OSrun", "OSrun", 50, 315200, 325200);
+    TH1F* ssEventsVsRun = new TH1F("SSrun", "SSrun", 50, 315200, 325200);
+    for (i = 0; i < osRunSize; i++) {
+      osEventsVsRun->Fill(osRun[i]);
+    }
+    for (i = 0; i < ssRunSize; i++) {
+      ssEventsVsRun->Fill(ssRun[i]);
+    }
     
     MyNewTree->AutoSave();
     hEvents->Write();
     hcount->Write();
     diEle_OS->Write();
     diEle_SS->Write();
+    osEventsVsRun->Write();
+    ssEventsVsRun->Write();
     if (hPU) hPU->Write();
     if (hPUTrue) hPUTrue->Write();
     file->Close();
@@ -135,6 +159,3 @@ int main(int argc, char* argv[]){
     
     return 0;
 }
-
-
-
