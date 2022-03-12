@@ -15,20 +15,12 @@ using namespace std;
 
 void SkimerBoost::Loop(TString OutputFile)
 {
-            
-    TH1F* hEvents = (TH1F*)gDirectory->Get("ggNtuplizer/hEvents");
-    TH1F* hPU     = (TH1F*)gDirectory->Get("ggNtuplizer/hPU");
-    TH1F* hPUTrue = (TH1F*)gDirectory->Get("ggNtuplizer/hPUTrue");
     TH1F* diEle_OS = new TH1F("diEle_OS","diEle_OS",30, 0, 160);
     TH1F* diEle_SS = new TH1F("diEle_SS","diEle_SS",30, 0, 160);
-    
-    
+
     TFile* file = TFile::Open(OutputFile, "RECREATE");
-    TTree* MyNewTree = fChain->CloneTree(0);
     
     fChain->SetBranchStatus("*",1);
-    
-    TH1F* hcount = new TH1F("hcount", "", 10, 0, 10);
     
     if (fChain == 0) return;
     
@@ -51,10 +43,7 @@ void SkimerBoost::Loop(TString OutputFile)
         
         
         if(jentry % 10000 == 0) cout << "Processed " << jentry << " events out of " <<nentries<<endl;
-        
-        hcount->Fill(1);
-        if (!isData)
-            hcount->Fill(2,genWeight);
+      
         
         
         TLorentzVector LeadEle4Momentum, SubEle4Momentum, ZCandidate;
@@ -106,7 +95,7 @@ void SkimerBoost::Loop(TString OutputFile)
 		    ssRunSize++;
 		  }
 		}
-		if (OS){
+	       	if (OS){
 		  diEle_OS->Fill(ZCandidate.M());
 		  break;
 		}
@@ -119,13 +108,11 @@ void SkimerBoost::Loop(TString OutputFile)
         }
         
         if(numDiEle < 1) continue;
-        hcount->Fill(3);
-
         
-        
-        MyNewTree->Fill();
+ 
     }
     int i;
+    TH1::SetDefaultSumw2();
     TH1F* osEventsVsRun = new TH1F("OSrun", "OSrun", 50, 315200, 325200);
     TH1F* ssEventsVsRun = new TH1F("SSrun", "SSrun", 50, 315200, 325200);
     for (i = 0; i < osRunSize; i++) {
@@ -134,16 +121,10 @@ void SkimerBoost::Loop(TString OutputFile)
     for (i = 0; i < ssRunSize; i++) {
       ssEventsVsRun->Fill(ssRun[i]);
     }
-    
-    MyNewTree->AutoSave();
-    hEvents->Write();
-    hcount->Write();
-    diEle_OS->Write();
-    diEle_SS->Write();
     osEventsVsRun->Write();
     ssEventsVsRun->Write();
-    if (hPU) hPU->Write();
-    if (hPUTrue) hPUTrue->Write();
+    diEle_OS->Write();
+    diEle_SS->Write();
     file->Close();
 }
 

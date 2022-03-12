@@ -15,19 +15,14 @@ using namespace std;
 
 void SkimerBoost::Loop(TString OutputFile)
 {
-            
-    TH1F* hEvents = (TH1F*)gDirectory->Get("ggNtuplizer/hEvents");
-    TH1F* hPU     = (TH1F*)gDirectory->Get("ggNtuplizer/hPU");
-    TH1F* hPUTrue = (TH1F*)gDirectory->Get("ggNtuplizer/hPUTrue");
     TH1F* diMu_OS = new TH1F("diMu_OS","diMu_OS",30, 0, 160);
-    TH1F* diMu_SS = new TH1F("diMu_SS","diMu_SS",30, 0, 160);
-    
+    TH1F* diMu_SS = new TH1F("diMu_SS","diMu_SS",30, 0, 160);      
+
     TFile* file = TFile::Open(OutputFile, "RECREATE");
-    TTree* MyNewTree = fChain->CloneTree(0);
     
     fChain->SetBranchStatus("*",1);
     
-    TH1F* hcount = new TH1F("hcount", "", 10, 0, 10);
+
     
     if (fChain == 0) return;
     
@@ -52,9 +47,7 @@ void SkimerBoost::Loop(TString OutputFile)
         
         if(jentry % 10000 == 0) cout << "Processed " << jentry << " events out of " <<nentries<<endl;
         
-        hcount->Fill(1);
-        if (!isData)
-            hcount->Fill(2,genWeight);
+
         
         
         TLorentzVector LeadMu4Momentum, SubMu4Momentum, ZCandidate;
@@ -103,17 +96,16 @@ void SkimerBoost::Loop(TString OutputFile)
 		  diMu_SS->Fill(ZCandidate.M());
 		  break;
 		}
-		break;    
+		break; 
             }
         }
         
         if(numDiMu < 1) continue;
-        hcount->Fill(3);
 
         
         
-        MyNewTree->Fill();
     }
+    TH1::SetDefaultSumw2();
     int i;
     TH1F* osEventsVsRun = new TH1F("OSrunMu", "OSrunMu", 50, 315200, 325200);
     TH1F* ssEventsVsRun = new TH1F("SSrunMu", "SSrunMu", 50, 315200, 325200);
@@ -122,18 +114,11 @@ void SkimerBoost::Loop(TString OutputFile)
     }
     for (i = 0; i < ssRunSize; i++) {
       ssEventsVsRun->Fill(ssRun[i]);
-    }
-    
-    
-    MyNewTree->AutoSave();
-    hEvents->Write();
-    hcount->Write();
-    diMu_OS->Write();
-    diMu_SS->Write();
+    } 
     osEventsVsRun->Write();
     ssEventsVsRun->Write();
-    if (hPU) hPU->Write();
-    if (hPUTrue) hPUTrue->Write();
+    diMu_OS->Write();
+    diMu_SS->Write();
     file->Close();
 }
 
@@ -149,5 +134,4 @@ int main(int argc, char* argv[]){
     
     return 0;
 }
-
 
