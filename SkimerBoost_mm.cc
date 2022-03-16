@@ -15,8 +15,8 @@ using namespace std;
 
 void SkimerBoost::Loop(TString OutputFile)
 {
-    TH1F* diMu_OS = new TH1F("diMu_OS","diMu_OS",30, 0, 160);
-    TH1F* diMu_SS = new TH1F("diMu_SS","diMu_SS",30, 0, 160);      
+    TH1F* diMu_OS = new TH1F("diMu_OS","diMu_OS",40, 0, 160);
+    TH1F* diMu_SS = new TH1F("diMu_SS","diMu_SS",40, 0, 160);      
 
     TFile* file = TFile::Open(OutputFile, "RECREATE");
     
@@ -107,8 +107,8 @@ void SkimerBoost::Loop(TString OutputFile)
     }
     TH1::SetDefaultSumw2();
     int i;
-    TH1F* osEventsVsRun = new TH1F("OSrunMu", "OSrunMu", 50, 315200, 325200);
-    TH1F* ssEventsVsRun = new TH1F("SSrunMu", "SSrunMu", 50, 315200, 325200);
+    TH1F* osEventsVsRun = new TH1F("OSrunMu", "OSrunMu", 100, 315200, 325200);
+    TH1F* ssEventsVsRun = new TH1F("SSrunMu", "SSrunMu", 100, 315200, 325200);
     for (i = 0; i < osRunSize; i++) {
       osEventsVsRun->Fill(osRun[i]);
     }
